@@ -43,6 +43,29 @@
       "priceCurrency": "USD"
     }
   }
+    async function handleSubscribe(e) {
+  e.preventDefault();
+  const email = document.getElementById('ecEmail').value.trim();
+  const btn   = document.getElementById('ecBtn');
+  const note  = document.getElementById('ecNote');
+  btn.textContent = '...'; btn.disabled = true;
+  try {
+    const res = await fetch('https://zerohypelab.substack.com/api/v1/free', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) {
+      document.getElementById('ecForm').style.display = 'none';
+      note.innerHTML = '<span class="ec-success">✓ Check your inbox to confirm. Welcome.</span>';
+    } else { throw new Error(); }
+  } catch {
+    window.open('https://zerohypelab.substack.com/subscribe','_blank');
+    btn.textContent = 'Subscribe free'; btn.disabled = false;
+    note.textContent = 'Redirected to subscribe page ↑';
+  }
+}
+
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -570,6 +593,19 @@
       .actions-row { flex-direction: column; }
       .cta-block { padding: 28px 20px; }
     }
+    /* ── Email Capture ───────────────────────── */
+.email-capture{border:1.5px solid #2e2e2e;border-radius:12px;padding:28px 32px;margin-top:24px;background:#1a1a1a}
+.ec-tag{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.ec-heading{font-size:16px;font-weight:600;color:var(--text);line-height:1.4;margin:0 0 16px}
+.ec-form{display:flex;gap:8px}
+.ec-input{flex:1;padding:11px 14px;border:1.5px solid #2e2e2e;border-radius:8px;font-family:inherit;font-size:14px;background:var(--bg-input);color:var(--text);outline:none;transition:border-color .18s}
+.ec-input:focus{border-color:var(--red)}
+.ec-btn{padding:11px 22px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .18s,transform .12s;white-space:nowrap}
+.ec-btn:hover{background:var(--red-dim);transform:translateY(-1px)}
+.ec-note{font-size:12px;color:var(--text-muted);margin:10px 0 0}
+.ec-success{font-family:'DM Mono',monospace;font-size:13px;color:var(--green)}
+@media(max-width:520px){.ec-form{flex-direction:column}.email-capture{padding:20px 18px}}
+
   </style>
 </head>
   <script data-goatcounter="https://zerohype.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -702,6 +738,16 @@ Best regards,
         <p class="cta-body">Bad copy is a symptom. The diagnosis requires looking at your ICP, targeting logic, sequence structure, and positioning. That's what Outreach Autopsy does. Specific findings. Actionable fixes. 48 hours. No fluff.</p>
         <a href="https://zerohypelab.com/outreach-autopsy/" class="cta-link">Get the Outreach Autopsy — $99 →</a>
       </div>
+<!-- Email Capture -->
+<div class="email-capture" id="emailCapture">
+  <div class="ec-tag">// keep the analysis</div>
+  <h3 class="ec-heading">One read per week. What actually kills B2B outreach — before you send it.</h3>
+  <form class="ec-form" id="ecForm" onsubmit="handleSubscribe(event)">
+    <input type="email" class="ec-input" id="ecEmail" placeholder="your@email.com" required autocomplete="email">
+    <button type="submit" class="ec-btn" id="ecBtn">Subscribe free</button>
+  </form>
+  <p class="ec-note" id="ecNote">ZeroHype newsletter. No pitch. No cadence. Unsubscribe any time.</p>
+</div>
 
     </section>
 
@@ -1007,6 +1053,11 @@ Best regards,
   }
 
   function retryEmail() {
+    document.getElementById('ecForm').style.display = 'flex';
+document.getElementById('ecEmail').value = '';
+document.getElementById('ecBtn').textContent = 'Subscribe free';
+document.getElementById('ecBtn').disabled = false;
+document.getElementById('ecNote').textContent = 'ZeroHype newsletter. No pitch. No cadence. Unsubscribe any time.';
     document.getElementById('resultsSection').classList.remove('visible');
     document.getElementById('scoreBarFill').style.width = '0%';
     window.scrollTo({ top: 0, behavior: 'smooth' });
